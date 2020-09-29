@@ -32,6 +32,9 @@ $(document).ready(function () {
             success: function () {
                 window.location.replace("/");
             },
+            error: function (e) {
+                console.log(e);
+            },
         });
     }
 

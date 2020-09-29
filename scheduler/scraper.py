@@ -97,15 +97,20 @@ def scraper():
     if len(links) > 0:
         appointments = []
 
-        logging.info(f"Found {len(links)} appointments. Adding to database...")
         for link in links:
             browser.get(link)
 
             soup = BeautifulSoup(browser.page_source, "lxml")
 
-            appointments.append(Appointment.create(link, soup))
+            appointment = Appointment.create(link, soup)
+
+            if appointment is not None:
+                appointments.append(appointment)
 
         if len(appointments) > 0:
+            logging.info(
+                f"Found {len(appointments)} appointments. Adding to database..."
+            )
 
             # Check if there are any cancelled events
             appointmentsComp = []
