@@ -1,0 +1,54 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container m-3 text-center">
+    <h1>Existing Appointment</h1>
+    <div class="row m-3">
+        <div class="col-md">
+            <p class="font-weight-bold m-0">Client</p>
+            <span>{{ appointment.name }}</span>
+        </div>
+        <div class="col-md">
+            <p class="font-weight-bold m-0">Course</p>
+            <span>{{ appointment.course }}</span>
+        </div>
+        <div class="col-md">
+            <p class="font-weight-bold m-0">ESL</p>
+            <span>{{ appointment.esl }}</span>
+        </div>
+    </div>
+    <div class="row m-3">
+        <div class="col-md">
+            <p class="font-weight-bold m-0">Start Time</p>
+            <span>{{ appointment.start }}</span>
+        </div>
+        <div class="col-md">
+            <p class="font-weight-bold m-0">End Time</p>
+            <span>{{ appointment.end }}</span>
+        </div>
+    </div>
+    <div class="row m-3">
+        <div class="col-md">
+            <p class="font-weight-bold m-0">Comments</p>
+            <span>{{ appointment.comments }}</span>
+        </div>
+    </div>
+    <div class="row m-3">
+        <div class="col-md">
+            <a class="btn btn-secondary" href="/">Go Back</a>
+        </div>
+        <div class="col-md">
+            <a class="btn btn-primary" target="_blank" href="{{ appointment.link }}"
+                >View Appointment on WCOnline</a
+            >
+        </div>
+        <div class="col-md">
+            {% if not(appointment.added) %}
+            <button class="btn btn-primary addEvent" id="{{ appointment.id }}">
+                Add to calendar
+            </button>
+            {% else %}
+            <button class="btn btn-secondary addEvent" disabled>Added</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

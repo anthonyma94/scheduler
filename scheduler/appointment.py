@@ -1,0 +1,148 @@
+import datetime, requests, json, os
+from flask.helpers import url_for
+import flask
+import string
+import logging
+from scheduler import db, courses
+from bs4 import BeautifulSoup
+import scheduler.google_calendar as google
+
+
+class Appointment(db.Model):
+    __tablename__ = "appointments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    start = db.Column(db.DateTime, unique=True, nullable=False)
+    end = db.Column(db.DateTime, unique=True, nullable=False)
+    name = db.Column(db.String(60), nullable=False)
+    link = db.Column(db.String(100), nullable=False, unique=True)
+    course = db.Column(db.String(40), nullable=False)
+    comments = db.Column(db.String(5000), nullable=False)
+    esl = db.Column(db.Boolean, nullable=False)
+    cal_id = db.Column(db.String(100))
+
+    @property
+    def calendarEventExists(self):
+        return self.cal_id is not None and self.cal_id != ""
+
+    @staticmethod
+    def create(link: str, soup: BeautifulSoup):
+        # Check if placeholder
+        placeholderSpan = soup.find(attrs={"class": "half_last"}).p
+
+        placeholder = "PLACEHOLDER" in str(placeholderSpan)
+        if placeholder:
+            return
+
+        # Find start and end time
+        timeSpan: BeautifulSoup = soup.find(attrs={"class": "half_first"}).p.span
+
+        date = timeSpan.contents[0].strip()
+        times = timeSpan.contents[2].strip()
+
+        times = timeSpan.contents[2].strip().split(" to ")
+        start = datetime.datetime.strptime(
+            f"{date} {times[0]}", "%A, %B %d, %Y %I:%M%p"
+        )
+        end = datetime.datetime.strptime(f"{date} {times[1]}", "%A, %B %d, %Y %I:%M%p")
+
+        # Find name
+        nameSpan: BeautifulSoup = soup.p.span
+        name = nameSpan.get_text().strip()
+        name = string.capwords(name)
+
+        # Find comments
+        commentsSpan = soup.find(
+            "b", text="Please state what you want to work on in the tutoring session"
+        ).findNext("span")
+        comments = commentsSpan.get_text().strip()
+
+        # Find course
+        courseSpan = soup.find("b", text="Selected Focus").findNext("span")
+        course = courseSpan.get_text().strip()
+
+        # Find esl
+        eslSpan = soup.find("b", text="Is English your second language?").findNext(
+            "span"
+        )
+        eslText = eslSpan.get_text().strip()
+        esl = "YES" in eslText.upper()
+
+        return Appointment(
+            start=start,
+            end=end,
+            name=name,
+            link=link,
+            course=course,
+            esl=esl,
+            comments=comments,
+        )
+
+    def add_event(self):
+        logging.info("Adding event...")
+        if self.calendarEventExists:
+            logging.error("Event already added.")
+            return
+
+        event = google.CalendarEvent(
+            summary="Tutoring session",
+            description="<a href='{0}' target='_blank'>Appointment</a>".format(
+                os.environ.get("BASE_URL") + flask.url_for(f"appointment", id=self.id)
+            ),
+            start=self.start,
+            end=self.end,
+        )
+
+        id = google.addEvent(event)
+        self.cal_id = id
+        db.session.commit()
+
+    def notify(self):
+        jwt = os.environ["TOKEN"]
+        ha_url = os.environ["HA_URL"]
+        headers = {"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"}
+
+        data = {"message": f"New tutoring session added. ({self})"}
+
+        url = f"{ha_url}/api/services/notify/mobile"
+        res = requests.post(url, headers=headers, data=json.dumps(data))
+        assert res.ok, "Could not send notification."
+        logging.info(f"Notification sent. ({repr(self)}")
+
+    def deleteEvent(self):
+        if self.cal_id == "" or self.cal_id is None:
+            logging.info("Appointment has not been added to calendar. Exiting...")
+            return
+
+        google.deleteEvent(self.cal_id)
+        return
+
+    def toDict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "sort": self.start.replace(tzinfo=datetime.timezone.utc).timestamp(),
+            "start": datetime.datetime.strftime(self.start, "%a, %b %d %I:%M %p"),
+            "end": datetime.datetime.strftime(self.end, "%a, %b %d %I:%M %p"),
+            "course": f"{courses[self.course]} ({self.course})",
+            "esl": "Yes" if self.esl else "No",
+            "comments": self.comments,
+            "link": self.link,
+            "added": self.calendarEventExists,
+        }
+
+    def isSame(self, other) -> bool:
+        return (
+            self.start == other.start
+            and self.end == other.end
+            and self.name == other.name
+        )
+
+    def __repr__(self) -> str:
+        obj = {
+            "id": self.id,
+            "name": self.name,
+            "start": str(self.start),
+            "end": str(self.end),
+        }
+        return json.dumps(obj)

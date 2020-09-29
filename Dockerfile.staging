@@ -1,0 +1,16 @@
+FROM python:3.8
+
+WORKDIR /app
+COPY requirements.txt main.py client_secret.json ./
+COPY scheduler/ ./scheduler
+RUN pip install -r requirements.txt
+
+ENV FLASK_ENV=development
+ENV FLASK_APP=/app/main.py
+ENV CAL_ID=bjvsi3rukjf409j1l7ue4vtt7o@group.calendar.google.com
+ENV HA_URL=http://docker.anthonyma.ca:8123
+ENV BASE_URL=https://scheduler-staging.anthonyma.ca
+
+VOLUME ["/db"]
+
+CMD ["python", "/app/main.py"]

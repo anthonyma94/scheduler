@@ -1,0 +1,5 @@
+/.venv
+/.vscode
+/client_secret.json
+/database.db
+/__pycache__
