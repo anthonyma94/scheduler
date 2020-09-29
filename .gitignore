@@ -3,3 +3,7 @@
 /client_secret.json
 /database.db
 /__pycache__
+.env
+.flaskenv
+Dockerfile
+Dockerfile.staging
