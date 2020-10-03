@@ -84,8 +84,6 @@ def addEvent(event: CalendarEvent) -> str:
         return flask.redirect("/auth", 303)
 
     cred = credentials.Credentials(**flask.session["credentials"])
-
-    print(flask.session["credentials"])
     service = build("calendar", "v3", credentials=cred, cache_discovery=False)
 
     res = service.events().insert(calendarId=CAL_ID, body=event.toDict()).execute()

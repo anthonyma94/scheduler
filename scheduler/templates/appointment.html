@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block content %}
-<div class="container m-3 text-center">
+<div class="container-fluid m-3 text-center">
     <h1>Existing Appointment</h1>
     <div class="row m-3">
         <div class="col-md">
@@ -32,15 +32,15 @@
         </div>
     </div>
     <div class="row m-3">
-        <div class="col-md">
+        <div class="col-md m-3">
             <a class="btn btn-secondary" href="/">Go Back</a>
         </div>
-        <div class="col-md">
+        <div class="col-md m-3">
             <a class="btn btn-primary" target="_blank" href="{{ appointment.link }}"
                 >View Appointment on WCOnline</a
             >
         </div>
-        <div class="col-md">
+        <div class="col-md m-3">
             {% if not(appointment.added) %}
             <button class="btn btn-primary addEvent" id="{{ appointment.id }}">
                 Add to calendar

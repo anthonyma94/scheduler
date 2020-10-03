@@ -1,4 +1,4 @@
-import datetime, requests, json, os
+import datetime, json, os
 from flask.helpers import url_for
 import string
 import logging
@@ -95,18 +95,6 @@ class Appointment(db.Model):
         id = google.addEvent(event)
         self.cal_id = id
         db.session.commit()
-
-    def notify(self):
-        jwt = os.environ["TOKEN"]
-        ha_url = os.environ["HA_URL"]
-        headers = {"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"}
-
-        data = {"message": f"New tutoring session added. ({self})"}
-
-        url = f"{ha_url}/api/services/notify/mobile"
-        res = requests.post(url, headers=headers, data=json.dumps(data))
-        assert res.ok, "Could not send notification."
-        logging.info(f"Notification sent. ({repr(self)}")
 
     def deleteEvent(self):
         if self.cal_id == "" or self.cal_id is None:

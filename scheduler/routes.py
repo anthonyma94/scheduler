@@ -23,7 +23,7 @@ from scheduler import scraperThread
 def index():
 
     models = Appointment.query.filter(
-        func.DATE(Appointment.start) >= datetime.date.today()
+        func.DATE(Appointment.start) >= datetime.datetime.utcnow()
     ).all()
 
     appointments = []
@@ -31,12 +31,9 @@ def index():
     for model in models:
         appointments.append(model.toDict())
 
-    appointmentsJSON = json.dumps(appointments)
-
     return render_template(
         "index.html",
         appointments=appointments,
-        appointmentsJSON=appointmentsJSON,
     )
 
 

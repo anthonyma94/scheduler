@@ -9,8 +9,8 @@ class Config:
 
 class DevelopmentConfig(Config):
     environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-    SECRET_KEY = "wsuetrhigasdgsdfgjhdgfhjhldjrfhgaoisdufghp"
+    SECRET_KEY = "wsuetrhigasdgsdfgjaerhbadfgasdfoisdufghp"
 
 
 class ProductionConfig(Config):
-    SECRET_KEY = urandom(32)
+    SECRET_KEY = environ.get("SECRET_KEY")
