@@ -47,9 +47,9 @@ class CalendarEvent:
 def getAuthURL():
     flow = Flow.from_client_secrets_file(join(PATH, CLIENT_SECRET_FILE), scopes=SCOPES)
 
-    flow.redirect_uri = environ.get("BASE_URL") + flask.url_for("callback")
+    flow.redirect_uri = environ.get("BASE_URL") + flask.url_for("/.callback")
 
-    auth_url, state = flow.authorization_url(access_type="offline", prompt="consent")
+    auth_url, state = flow.authorization_url(access_type="offline")
 
     flask.session["state"] = state
 
@@ -62,7 +62,7 @@ def getCredentials(resp):
         join(PATH, CLIENT_SECRET_FILE), scopes=SCOPES, state=state
     )
 
-    flow.redirect_uri = environ.get("BASE_URL") + flask.url_for("callback")
+    flow.redirect_uri = environ.get("BASE_URL") + flask.url_for("/.callback")
 
     flow.fetch_token(authorization_response=resp)
 

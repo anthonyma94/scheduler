@@ -1,11 +1,10 @@
 import datetime, requests, json, os
 from flask.helpers import url_for
-import flask
 import string
 import logging
-from scheduler import db, courses
-from bs4 import BeautifulSoup
+from scheduler.utils import db, courses
 import scheduler.google_calendar as google
+from bs4 import BeautifulSoup
 
 
 class Appointment(db.Model):
@@ -87,7 +86,7 @@ class Appointment(db.Model):
         event = google.CalendarEvent(
             summary="Tutoring session",
             description="<a href='{0}' target='_blank'>Appointment</a>".format(
-                os.environ.get("BASE_URL") + flask.url_for(f"appointment", id=self.id)
+                os.environ.get("BASE_URL") + url_for("/.appointment", id=self.id)
             ),
             start=self.start,
             end=self.end,
