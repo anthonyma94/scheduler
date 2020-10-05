@@ -1,4 +1,4 @@
-from os import environ, urandom
+from os import environ
 
 
 class Config:

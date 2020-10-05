@@ -1,4 +1,4 @@
-import datetime
+import datetime, pytz
 from flask.blueprints import Blueprint
 from flask.json import jsonify
 from sqlalchemy import func
@@ -9,7 +9,6 @@ from werkzeug.wrappers import Response
 from scheduler.utils import oauth_required
 from scheduler.appointment import Appointment
 from flask.templating import render_template
-import json
 from scheduler.google_calendar import getCredentials, getAuthURL
 from scheduler.utils import db
 
@@ -23,8 +22,11 @@ from scheduler import scraperThread
 def index():
 
     models = Appointment.query.filter(
-        func.DATE(Appointment.start) >= datetime.datetime.utcnow()
+        func.DATETIME(Appointment.end) >= datetime.datetime.now()
     ).all()
+
+    print(models[0].start)
+    print(datetime.datetime.utcnow())
 
     appointments = []
 

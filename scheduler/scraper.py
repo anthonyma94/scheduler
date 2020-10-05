@@ -1,5 +1,4 @@
-import os, regex, datetime, logging
-import sys
+import os, regex, datetime, logging, sys
 from threading import Thread
 from bs4 import BeautifulSoup
 from typing import List, Match

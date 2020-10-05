@@ -1,7 +1,5 @@
-import datetime, json, os
+import datetime, json, os, string, logging
 from flask.helpers import url_for
-import string
-import logging
 from scheduler.utils import db, courses
 import scheduler.google_calendar as google
 from bs4 import BeautifulSoup

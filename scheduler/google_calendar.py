@@ -1,9 +1,6 @@
-import datetime
-import logging
+import datetime, logging, flask
 from os.path import abspath, dirname, join
 from os import environ
-from typing import List
-import flask
 from google.oauth2 import credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow

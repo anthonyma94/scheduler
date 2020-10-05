@@ -1,8 +1,8 @@
-/.venv
-/.vscode
+.venv/
+.vscode/
 /client_secret.json
 /database.db
-/__pycache__
+__pycache__/
 .env
 .flaskenv
 Dockerfile

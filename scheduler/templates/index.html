@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block content %}
-<div class="container-fluid m-3">
+<div class="container-fluid p-0 p-sm-1 m-1 m-md-3">
     <h1 class="text-center">Appointments</h1>
-    <div class="row m-3 text-center">
+    <div class="row m-0 m-md-3 text-center">
         <div class="col-sm m-3 m-md-0">
             <button class="btn btn-primary getAppointments">
                 Retrieve appointments from WCOnline
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="row m-3 text-center d-none" id="progressRow">
+    <div class="row m-0 m-md-3 text-center d-none" id="progressRow">
         <div class="col">
             <div class="progress">
                 <div
@@ -37,8 +37,8 @@
         </div>
     </div>
 
-    <div class="row m-3">
-        <div class="col-12">
+    <div class="row m-0 m-md-3">
+        <div class="col-12 p-0">
             <table
                 class="table table-striped table-bordered table-responsive"
                 id="appointments"
