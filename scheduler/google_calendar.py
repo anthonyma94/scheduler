@@ -46,7 +46,7 @@ def getAuthURL():
 
     flow.redirect_uri = environ.get("BASE_URL") + flask.url_for("/.callback")
 
-    auth_url, state = flow.authorization_url(access_type="offline")
+    auth_url, state = flow.authorization_url(access_type="offline", prompt="consent")
 
     flask.session["state"] = state
 

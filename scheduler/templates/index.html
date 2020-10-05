@@ -1,127 +1,125 @@
 {% extends 'base.html' %} {% block content %}
-<div class="container-fluid p-0 p-sm-1 m-1 m-md-3">
-    <h1 class="text-center">Appointments</h1>
-    <div class="row m-0 m-md-3 text-center">
-        <div class="col-sm m-3 m-md-0">
-            <button class="btn btn-primary getAppointments">
-                Retrieve appointments from WCOnline
-            </button>
-        </div>
-        <div class="col-sm m-3 m-md-0">
-            <a
-                class="btn btn-primary"
-                href="https://mohawk2.mywconline.com/"
-                target="_blank"
-                >Go to WCOnline</a
-            >
-        </div>
-        <div class="col-sm m-3 m-md-0">
-            <button class="btn btn-primary addAllEvents">Add all appointments</button>
-        </div>
+<div class="container-fluid my-3">
+  <h1 class="text-center">Appointments</h1>
+  <div class="row my-3 text-center">
+    <div class="col-sm m-3 m-md-0">
+      <button class="btn btn-primary getAppointments">
+        Retrieve appointments from WCOnline
+      </button>
     </div>
+    <div class="col-sm m-3 m-md-0">
+      <a
+        class="btn btn-primary"
+        href="https://mohawk2.mywconline.com/"
+        target="_blank"
+        >Go to WCOnline</a
+      >
+    </div>
+    <div class="col-sm m-3 m-md-0">
+      <button class="btn btn-primary addAllEvents">Add all appointments</button>
+    </div>
+  </div>
 
-    <div class="row m-0 m-md-3 text-center d-none" id="progressRow">
-        <div class="col">
-            <div class="progress">
-                <div
-                    class="progress-bar progress-bar-striped progress-bar-animated"
-                    role="progressbar"
-                    aria-valuenow="0"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    style="width: 0%"
-                >
-                    0%
-                </div>
-            </div>
+  <div class="row text-center d-none" id="progressRow">
+    <div class="col">
+      <div class="progress">
+        <div
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          role="progressbar"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 0%"
+        >
+          0%
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="row m-0 m-md-3">
-        <div class="col-12 p-0">
-            <table
-                class="table table-striped table-bordered table-responsive"
-                id="appointments"
-                style="width: 100%"
-            >
-                <thead class="text-center">
-                    <tr>
-                        <th>Sort</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Name</th>
-                        <th>Course</th>
-                        <th>Comments</th>
-                        <th>ESL</th>
-                        <th>Details</th>
-                        <th>Add to Calendar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for appointment in appointments %}
-                    <tr>
-                        <td>{{ appointment.sort }}</td>
-                        <td>{{ appointment.start }}</td>
-                        <td>{{ appointment.end }}</td>
-                        <td>{{ appointment.name }}</td>
-                        <td>{{ appointment.course }}</td>
-                        <td>
-                            <p>{{ appointment.comments }}</p>
-                        </td>
-                        <td>{{ appointment.esl }}</td>
-                        <td class="text-center">
-                            <a href="/appointment/{{ appointment.id }}">View</a>
-                        </td>
-                        <td class="text-center">
-                            {% if not(appointment.added) %}
-                            <button
-                                class="btn btn-primary addEvent"
-                                id="{{ appointment.id }}"
-                            >
-                                Add
-                            </button>
-                            {% else %}
-                            <button class="btn btn-secondary addEvent" disabled>
-                                Added
-                            </button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+  <div class="row">
+    <div class="col-12">
+      <table
+        class="table table-striped table-bordered table-responsive"
+        id="appointments"
+        style="width: 100%"
+      >
+        <thead class="text-center">
+          <tr>
+            <th>Sort</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Comments</th>
+            <th>ESL</th>
+            <th>Details</th>
+            <th>Add to Calendar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appointment in appointments %}
+          <tr>
+            <td>{{ appointment.sort }}</td>
+            <td>{{ appointment.start }}</td>
+            <td>{{ appointment.end }}</td>
+            <td>{{ appointment.name }}</td>
+            <td>{{ appointment.course }}</td>
+            <td>
+              <p>{{ appointment.comments }}</p>
+            </td>
+            <td>{{ appointment.esl }}</td>
+            <td class="text-center">
+              <a href="/appointment/{{ appointment.id }}">View</a>
+            </td>
+            <td class="text-center">
+              {% if not(appointment.added) %}
+              <button
+                class="btn btn-primary addEvent"
+                id="{{ appointment.id }}"
+              >
+                Add
+              </button>
+              {% else %}
+              <button class="btn btn-secondary addEvent" disabled>Added</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 </div>
 {% endblock %} {% block scripts %}
 <link
-    href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"
-    rel="stylesheet"
+  href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"
+  rel="stylesheet"
 />
 
 <link
-    rel="stylesheet"
-    type="text/css"
-    href="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.css"
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.css"
 />
 <script
-    type="text/javascript"
-    src="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.js"
+  type="text/javascript"
+  src="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.js"
 ></script>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#appointments").DataTable({
-            order: [[1, "asc"]],
-            responsive: true,
-            columnDefs: [
-                { targets: 0, visible: false, searchable: false },
-                { targets: [1, 2], orderData: 0 },
-                { targets: [5, 7, 8], orderable: false },
-                { responsivePriority: 1, targets: [1, 3, 4] },
-                { responsivePriority: 2, targets: [2, 5] },
-            ],
-        });
+  $(document).ready(function () {
+    $("#appointments").DataTable({
+      order: [[1, "asc"]],
+      responsive: true,
+      columnDefs: [
+        { targets: 0, visible: false, searchable: false },
+        { targets: [1, 2], orderData: 0 },
+        { targets: [5, 7, 8], orderable: false },
+        { responsivePriority: 1, targets: [1, 3, 4] },
+        { responsivePriority: 2, targets: [2, 5] },
+      ],
     });
+  });
 </script>
 {% endblock %}

@@ -1,7 +1,9 @@
 import datetime, pytz
+import logging
+import os
 from flask.blueprints import Blueprint
 from flask.json import jsonify
-from sqlalchemy import func
+from sqlalchemy import func, DateTime, cast
 from typing import List
 from flask import redirect, request
 from werkzeug.exceptions import InternalServerError
@@ -20,13 +22,18 @@ from scheduler import scraperThread
 @bp.route("/index.html")
 @oauth_required
 def index():
+    models = None
 
-    models = Appointment.query.filter(
-        func.DATETIME(Appointment.end) >= datetime.datetime.now()
-    ).all()
-
-    print(models[0].start)
-    print(datetime.datetime.utcnow())
+    if "sqlite" in os.environ.get("DATABASE_URI"):
+        models = Appointment.query.filter(
+            func.DATETIME(Appointment.end) >= datetime.datetime.now()
+        ).all()
+    else:
+        models = Appointment.query.filter(
+            cast(Appointment.end, DateTime) >= datetime.datetime.now()
+        ).all()
+        logging.info(models[0].end)
+        logging.info(datetime.datetime.now())
 
     appointments = []
 

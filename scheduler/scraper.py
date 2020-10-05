@@ -2,7 +2,7 @@ import os, regex, datetime, logging, sys
 from threading import Thread
 from bs4 import BeautifulSoup
 from typing import List, Match
-from selenium.webdriver import Remote
+from selenium.webdriver import Remote, Firefox
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
 from werkzeug.exceptions import InternalServerError
@@ -25,10 +25,14 @@ class ScraperThread(Thread):
         try:
             logging.info("Starting scraper...")
             opts = Options()
-            opts.headless = True
+            # opts.headless = True
 
             try:
                 browser = Remote("http://192.168.20.15:4444/wd/hub", options=opts)
+                # browser = Firefox(
+                #     executable_path="C:\\Users\\Anthony\\Documents\\Code\\Python\\scheduler\\geckodriver.exe",
+                #     options=opts,
+                # )
                 self.progress = 5
             except Exception as e:
                 logging.error(e)

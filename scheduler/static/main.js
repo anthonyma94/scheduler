@@ -1,24 +1,7 @@
 $(document).ready(function () {
-    // $(".addEvent").on("click", function () {
-    //     let button = $(this);
-    //     button.data("previousState", button.html());
-    //     button.html(loadButton());
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "/add/" + this.id,
-    //         success: function () {
-    //             button.removeClass("btn-primary");
-    //             button.addClass("btn-secondary");
-    //             button.prop("disabled", true);
-    //             button.html("Added");
-    //         },
-    //         error: function (jqXHR, status, error) {
-    //             errorFunc(jqXHR, status, error, button);
-    //         },
-    //     });
-    // });
-
-    $(".addEvent").on("click", { method: "POST", text: "Adding..." }, function (e) {
+    $(".addEvent").on("click", { method: "POST", text: "Adding..." }, function (
+        e
+    ) {
         e.data.url = "/add/" + this.id;
         onClick(e, $(this));
     });
@@ -32,9 +15,7 @@ $(document).ready(function () {
         "click",
         { method: "GET", url: "/getappointments", text: "Retrieving..." },
         function (e) {
-            let bar = $("#progressRow");
-            let timerID = setInterval(checkProgress, 1000);
-            bar.removeClass("d-none").show();
+            checkProgress();
             onClick(e, $(this));
         }
     );
@@ -57,18 +38,29 @@ $(document).ready(function () {
     }
 
     function checkProgress() {
+        let bar = $("#progressRow");
+        if (bar.hasClass("d-none")) {
+            bar.removeClass("d-none").show();
+        }
         $.ajax({
             type: "GET",
             url: "/progress",
             success: function (data) {
                 let progress = data.progress;
                 let bar = $(".progress-bar");
-                bar.attr("aria-valuenow", progress).css("width", progress + "%");
+                bar.attr("aria-valuenow", progress).css(
+                    "width",
+                    progress + "%"
+                );
                 bar.text(progress + "%");
+                if (progress >= 0 && progress < 100) {
+                    console.log("running recursion");
+                    setTimeout(checkProgress, 1000);
+                }
             },
             error: function (jqXHR, status, error) {
-                console.log(jqXHR);
-                $("#progressRow").addClass("d-none").hide();
+                bar.addClass("d-none").hide();
+                clearTimeout(checkProgress);
             },
         });
     }

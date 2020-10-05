@@ -7,3 +7,6 @@ __pycache__/
 .flaskenv
 Dockerfile
 Dockerfile.staging
+geckodriver.exe
+geckodriver.log
+bash.exe.stackdump
