@@ -8,6 +8,12 @@
       </button>
     </div>
     <div class="col-sm m-3 m-md-0">
+      <button class="btn btn-primary addAllEvents">Add all appointments</button>
+    </div>
+  </div>
+
+  <div class="row my-3 text-center">
+    <div class="col-sm m-3 m-md-0">
       <a
         class="btn btn-primary"
         href="https://mohawk2.mywconline.com/"
@@ -15,12 +21,33 @@
         >Go to WCOnline</a
       >
     </div>
+
     <div class="col-sm m-3 m-md-0">
-      <button class="btn btn-primary addAllEvents">Add all appointments</button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        data-toggle="collapse"
+        data-target="#missingText"
+        aria-expanded="false"
+        aria-controls="missingText"
+      >
+        Toggle no-show text
+      </button>
     </div>
   </div>
 
-  <div class="row text-center d-none" id="progressRow">
+  <div class="row collapse my-3" id="missingText">
+    <div class="col">
+      <div class="card card-body">
+        It is now 15 minutes after the start of our appointment. Sorry you
+        couldn’t make it. If this is your first no show, please feel free to
+        book another session with me or another LSC tutor through our online
+        portal. Have a great day!
+      </div>
+    </div>
+  </div>
+
+  <div class="row text-center collapse my-3" id="progressRow">
     <div class="col">
       <div class="progress">
         <div
@@ -37,7 +64,7 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="row my-3">
     <div class="col-12">
       <table
         class="table table-striped table-bordered table-responsive"

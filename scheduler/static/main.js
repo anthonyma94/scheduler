@@ -39,9 +39,7 @@ $(document).ready(function () {
 
     function checkProgress() {
         let bar = $("#progressRow");
-        if (bar.hasClass("d-none")) {
-            bar.removeClass("d-none").show();
-        }
+        bar.collapse("show");
         $.ajax({
             type: "GET",
             url: "/progress",
@@ -59,7 +57,7 @@ $(document).ready(function () {
                 }
             },
             error: function (jqXHR, status, error) {
-                bar.addClass("d-none").hide();
+                bar.collapse("hide");
                 clearTimeout(checkProgress);
             },
         });
@@ -76,14 +74,9 @@ $(document).ready(function () {
         let alert = $("#topAlert");
         let div = alert.closest(".container-fluid");
         alert.addClass("alert-danger").html(status);
-        if (div.hasClass("d-none")) {
-            div.removeClass("d-none")
-                .hide()
-                .slideDown(500)
-                .fadeTo(3000, 1) // used to wait for next animation
-                .slideUp(500, function () {
-                    div.addClass("d-none");
-                });
-        }
+        div.collapse("show");
+        div.on("shown.bs.collapse", function () {
+            setTimeout(() => div.collapse("hide"), 3000);
+        });
     }
 });
