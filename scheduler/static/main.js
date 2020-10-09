@@ -46,17 +46,19 @@ $(document).ready(function () {
             success: function (data) {
                 let progress = data.progress;
                 let bar = $(".progress-bar");
-                bar.attr("aria-valuenow", progress).css(
-                    "width",
-                    progress + "%"
-                );
-                bar.text(progress + "%");
-                if (progress >= 0 && progress < 100) {
-                    console.log("running recursion");
+                if (progress >= 0 && progress <= 100) {
+                    bar.attr("aria-valuenow", progress).css(
+                        "width",
+                        progress + "%"
+                    );
+                    bar.text(progress + "%");
                     setTimeout(checkProgress, 1000);
+                } else {
+                    bar.collapse("hide");
+                    clearTimeout(checkProgress);
                 }
             },
-            error: function (jqXHR, status, error) {
+            error: function () {
                 bar.collapse("hide");
                 clearTimeout(checkProgress);
             },
@@ -69,11 +71,10 @@ $(document).ready(function () {
     }
 
     function errorFunc(jqXHR, status, error, button) {
-        console.error(jqXHR);
         button.html(button.data("previousState"));
         let alert = $("#topAlert");
         let div = alert.closest(".container-fluid");
-        alert.addClass("alert-danger").html(status);
+        alert.addClass("alert-danger").html(jqXHR.responseText);
         div.collapse("show");
         div.on("shown.bs.collapse", function () {
             setTimeout(() => div.collapse("hide"), 3000);

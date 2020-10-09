@@ -1,16 +1,14 @@
-import datetime, pytz
-import logging
-import os
+import datetime, logging, os
+from flask import redirect, request
 from flask.blueprints import Blueprint
 from flask.json import jsonify
+from flask.templating import render_template
 from sqlalchemy import func, DateTime, cast
 from typing import List
-from flask import redirect, request
 from werkzeug.exceptions import InternalServerError
 from werkzeug.wrappers import Response
 from scheduler.utils import oauth_required
 from scheduler.appointment import Appointment
-from flask.templating import render_template
 from scheduler.google_calendar import getCredentials, getAuthURL
 from scheduler.utils import db
 
