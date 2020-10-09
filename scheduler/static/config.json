@@ -1,0 +1,35 @@
+{
+    "headers": {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Host": "mohawk2.mywconline.com",
+        "Origin": "https://mohawk2.mywconline.com",
+        "Referer": "https://mohawk2.mywconline.com/",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-User": "?1",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+    },
+
+    "login": {
+        "username": "",
+        "password": "",
+        "scheduleid": "sc5f5926779066a",
+        "login": "log in"
+    },
+
+    "find_schedule": {
+        "from": "SCHEDULE",
+        "sid": "sc5f5926779066a",
+        "rid": "sc5f5bcec616978",
+        "climit": "",
+        "client": "",
+        "sdate": "",
+        "edate": "",
+        "sortorder": "",
+        "submit": "Run Report"
+    }
+}
