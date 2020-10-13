@@ -30,8 +30,6 @@ def index():
         models = Appointment.query.filter(
             cast(Appointment.end, DateTime) >= datetime.datetime.now()
         ).all()
-        logging.info(models[0].end)
-        logging.info(datetime.datetime.now())
 
     appointments = []
 

@@ -6,6 +6,7 @@ from werkzeug.exceptions import InternalServerError
 from scheduler.appointment import Appointment
 from scheduler.utils import db
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func, DateTime, cast
 
 
 def scrape():
@@ -80,9 +81,20 @@ def parse(appointments):
             item = {"name": i.name, "start": i.start, "end": i.end}
             appointmentsComp.append(item)
 
-        appointmentsInDB = Appointment.query.filter(
-            Appointment.start >= datetime.date.today()
-        ).all()
+        if "sqlite" in os.environ.get("DATABASE_URI"):
+            appointmentsInDB = Appointment.query.filter(
+                func.DATETIME(Appointment.start)
+                >= (
+                    datetime.datetime.now() + datetime.timedelta(hours=3)
+                )  # Cancellation period is 3 hours
+            ).all()
+        else:
+            appointmentsInDB = Appointment.query.filter(
+                cast(Appointment.start, DateTime)
+                >= (
+                    datetime.datetime.now() + datetime.timedelta(hours=3)
+                )  # Cancellation period is 3 hours
+            ).all()
 
         for i in appointmentsInDB:
             item = {"name": i.name, "start": i.start, "end": i.end}

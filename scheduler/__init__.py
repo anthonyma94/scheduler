@@ -29,6 +29,3 @@ with app.app_context():
     engine = db.get_engine()
     if not (Appointment.metadata.tables[Appointment.__tablename__].exists(engine)):
         db.create_all()
-
-
-# progress = ProgressThread()
