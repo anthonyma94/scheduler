@@ -57,6 +57,8 @@ class Appointment(db.Model):
         # Find course
         courseSpan = soup.find("b", text="Selected Focus").findNext("span")
         course = courseSpan.get_text().strip()
+        if course is None or course == "":
+            course = "N/A"
 
         # Find esl
         eslSpan = soup.find("b", text="Is English your second language?").findNext(
@@ -109,7 +111,9 @@ class Appointment(db.Model):
             "sort": self.start.replace(tzinfo=datetime.timezone.utc).timestamp(),
             "start": datetime.datetime.strftime(self.start, "%a, %b %d %I:%M %p"),
             "end": datetime.datetime.strftime(self.end, "%a, %b %d %I:%M %p"),
-            "course": f"{courses[self.course]} ({self.course})",
+            "course": f"{courses[self.course]} ({self.course})"
+            if self.course in courses
+            else self.course,
             "esl": "Yes" if self.esl else "No",
             "comments": self.comments,
             "link": self.link,

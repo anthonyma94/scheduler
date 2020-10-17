@@ -1,9 +1,11 @@
 $(document).ready(function () {
-    $(".addEvent").on("click", { method: "POST", text: "Adding..." }, function (
-        e
-    ) {
-        e.data.url = "/add/" + this.id;
-        onClick(e, $(this));
+    $(document).on("click", ".addEvent", function (e) {
+        e.data = {
+            method: "POST",
+            text: "Adding...",
+            url: "/add/" + this.id,
+        };
+        onClick(e);
     });
 
     $(".addAllEvents").on(
@@ -16,12 +18,12 @@ $(document).ready(function () {
         { method: "GET", url: "/getappointments", text: "Retrieving..." },
         function (e) {
             checkProgress();
-            onClick(e, $(this));
+            onClick(e);
         }
     );
 
-    function onClick(event, button = $(this)) {
-        console.log(button);
+    function onClick(event) {
+        button = $(event.target);
         button.data("previousState", button.html());
         button.html(loadButton(event.data.text));
 
