@@ -8,6 +8,21 @@ $(document).ready(function () {
         onClick(e);
     });
 
+    $("#dropInButton").click(function (e) {
+        e.preventDefault();
+        let currentWindow = window.self;
+        $(this).html("Host ID: 112233");
+        let newWindow = window.open(
+            "about:blank",
+            this.target,
+            "width=10,height=10"
+        );
+        currentWindow.focus();
+        newWindow.location.href = this.href;
+        setTimeout(() => newWindow.close(), 300);
+        currentWindow.focus();
+    });
+
     $(".addAllEvents").on(
         "click",
         { method: "GET", url: "/add/0", text: "Adding..." },
@@ -21,6 +36,19 @@ $(document).ready(function () {
             onClick(e);
         }
     );
+
+    function popUnder(node) {
+        $(node).html("Host ID: 112233");
+        var newWindow = window.open(
+            "about:blank",
+            node.target,
+            "width=500,height=500"
+        );
+        newWindow.blur();
+        window.focus();
+        newWindow.location.href = node.href;
+        return false;
+    }
 
     function onClick(event) {
         button = $(event.target);
