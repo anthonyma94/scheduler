@@ -94,36 +94,6 @@
             <th>Add to Calendar</th>
           </tr>
         </thead>
-        <tbody>
-          {% for appointment in appointments %}
-          <tr>
-            <td>{{ appointment.sort }}</td>
-            <td>{{ appointment.start }}</td>
-            <td>{{ appointment.end }}</td>
-            <td>{{ appointment.name }}</td>
-            <td>{{ appointment.course }}</td>
-            <td>
-              <p>{{ appointment.comments }}</p>
-            </td>
-            <td>{{ appointment.esl }}</td>
-            <td class="text-center">
-              <a href="/appointment/{{ appointment.id }}">View</a>
-            </td>
-            <td class="text-center">
-              {% if not(appointment.added) %}
-              <button
-                class="btn btn-primary addEvent"
-                id="{{ appointment.id }}"
-              >
-                Add
-              </button>
-              {% else %}
-              <button class="btn btn-secondary addEvent" disabled>Added</button>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
       </table>
     </div>
   </div>
@@ -146,7 +116,30 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $("#appointments").DataTable({
+    var table = $("#appointments").DataTable({
+      ajax: "/api/get",
+      columns: [
+        { data: "sort" },
+        { data: "start" },
+        { data: "end" },
+        { data: "name" },
+        { data: "course" },
+        { data: "comments" },
+        { data: "esl" },
+        {
+          data: "id",
+          render: (data) => `<a href="/appointment/${data}">View</a>`,
+        },
+        {
+          data: "added",
+          render: (data, type, row) =>
+            `<button id="${row.id}" class="btn btn-${
+              data ? "secondary" : "primary"
+            } addEvent ${data ? "disabled" : ""}">${
+              data ? "Added" : "Add"
+            }</button>`,
+        },
+      ],
       order: [[1, "asc"]],
       responsive: true,
       columnDefs: [
@@ -157,6 +150,21 @@
         { responsivePriority: 2, targets: [2, 5] },
       ],
     });
+
+    $(".dataTables_filter input")
+      .off()
+      .on("keyup focusout", function () {
+        if (
+          this.value === null ||
+          this.value === undefined ||
+          this.value === false ||
+          this.value === ""
+        ) {
+          table.ajax.url("/api/get").load();
+        } else if (this.value.length > 2) {
+          table.ajax.url(`/search?text=${this.value}`).load();
+        }
+      });
   });
 </script>
 {% endblock %}

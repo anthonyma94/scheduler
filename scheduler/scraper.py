@@ -35,16 +35,25 @@ def scrape():
     s.post("https://mohawk2.mywconline.com/", data=login)
     res = s.post("https://mohawk2.mywconline.com/report_mlr.php", data=find_schedule)
 
-    doc = html.fromstring(res.content)
+    soup = BeautifulSoup(res.text, "html.parser")
 
-    divs: html.Element = doc.xpath(
-        "//div[@class='content_form']//div[@class='form_frame']//div[@class='third_form_last']"
+    # divs = soup.find_all(name="div", attrs={"class": "form_frame"})
+    div = soup.find(
+        lambda x: x.name == "div"
+        and "form_frame" in x.get("class", [])
+        and not "no-print" in x["class"]
     )
+
+    divs = div.find_all(name="div", attrs={"class": "form_frame"})
+
+    if len(divs) == 0:
+        divs = soup.find_all(name="div", attrs={"style": "width:20%;float:right;"})
 
     links = []
     for i in divs:
-        a = i[0][0].get("onclick")
-        match = regex.search(r"(?<=window\.open\(\')([^\']*)", a)
+        a = i.find(name="a", text=regex.compile("View Appointment"))
+        # a = i[0][0].get("onclick")
+        match = regex.search(r"(?<=window\.open\(\')([^\']*)", a.get("onclick"))
         links.append("https://mohawk2.mywconline.com/" + match.group())
 
     appointments = []

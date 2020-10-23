@@ -1,9 +1,10 @@
 import datetime, logging, os
+import json
 from flask import redirect, request
 from flask.blueprints import Blueprint
 from flask.json import jsonify
 from flask.templating import render_template
-from sqlalchemy import func, DateTime, cast
+from sqlalchemy import func, DateTime, cast, or_
 from typing import List
 from werkzeug.exceptions import InternalServerError
 from werkzeug.wrappers import Response
@@ -40,6 +41,49 @@ def index():
         "index.html",
         appointments=appointments,
     )
+
+
+@bp.route("/api/get")
+def get():
+    models = None
+
+    if "sqlite" in os.environ.get("DATABASE_URI"):
+        models = Appointment.query.filter(
+            func.DATETIME(Appointment.end) >= datetime.datetime.now()
+        ).all()
+    else:
+        models = Appointment.query.filter(
+            cast(Appointment.end, DateTime) >= datetime.datetime.now()
+        ).all()
+
+    appointments = []
+
+    for model in models:
+        appointments.append(model.toDict())
+
+    return {"data": appointments}, 200
+
+
+@bp.route("/search")
+def search():
+    text = request.args.get("text")
+    if text is None:
+        raise InternalServerError
+
+    text = f"%{text}%"
+
+    appointments: List[Appointment] = Appointment.query.filter(
+        or_(
+            Appointment.name.like(text),
+            Appointment.course.like(text),
+            Appointment.comments.like(text),
+        )
+    ).all()
+
+    dict = []
+    [dict.append(i.toDict()) for i in appointments]
+
+    return {"data": dict}, 200
 
 
 @bp.route("/auth")

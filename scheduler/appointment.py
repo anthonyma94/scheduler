@@ -98,7 +98,7 @@ class Appointment(db.Model):
 
     def deleteEvent(self):
         if self.cal_id == "" or self.cal_id is None:
-            logging.info("Appointment has not been added to calendar. Exiting...")
+            logging.info("Appointment has not been added to calendar.")
             return
 
         google.deleteEvent(self.cal_id)

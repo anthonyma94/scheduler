@@ -19,7 +19,7 @@ $(document).ready(function () {
         );
         currentWindow.focus();
         newWindow.location.href = this.href;
-        setTimeout(() => newWindow.close(), 300);
+        setTimeout(() => newWindow.close(), 500);
         currentWindow.focus();
     });
 
@@ -36,19 +36,6 @@ $(document).ready(function () {
             onClick(e);
         }
     );
-
-    function popUnder(node) {
-        $(node).html("Host ID: 112233");
-        var newWindow = window.open(
-            "about:blank",
-            node.target,
-            "width=500,height=500"
-        );
-        newWindow.blur();
-        window.focus();
-        newWindow.location.href = node.href;
-        return false;
-    }
 
     function onClick(event) {
         button = $(event.target);
