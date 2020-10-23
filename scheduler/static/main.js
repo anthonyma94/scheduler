@@ -1,5 +1,55 @@
 $(document).ready(function () {
-    $(document).on("click", ".addEvent", function (e) {
+    var table = $("#appointments").DataTable({
+        ajax: "/api/get",
+        columns: [
+            { data: "sort" },
+            { data: "start" },
+            { data: "end" },
+            { data: "name" },
+            { data: "course" },
+            { data: "comments" },
+            { data: "esl" },
+            {
+                data: "id",
+                render: (data) => `<a href="/appointment/${data}">View</a>`,
+            },
+            {
+                data: "added",
+                render: (data, type, row) =>
+                    `<button id="${row.id}" class="btn btn-${
+                        data ? "secondary" : "primary"
+                    } addEvent ${data ? "disabled" : ""}">${
+                        data ? "Added" : "Add"
+                    }</button>`,
+            },
+        ],
+        order: [[1, "asc"]],
+        responsive: true,
+        columnDefs: [
+            { targets: 0, visible: false, searchable: false },
+            { targets: [1, 2], orderData: 0 },
+            { targets: [5, 7, 8], orderable: false },
+            { responsivePriority: 1, targets: [1, 3, 4] },
+            { responsivePriority: 2, targets: [2, 5] },
+        ],
+    });
+
+    $(".dataTables_filter input")
+        .off()
+        .on("keyup focusout", function () {
+            if (
+                this.value === null ||
+                this.value === undefined ||
+                this.value === false ||
+                this.value === ""
+            ) {
+                table.ajax.url("/api/get").load();
+            } else if (this.value.length > 2) {
+                table.ajax.url(`/search?text=${this.value}`).load();
+            }
+        });
+
+    $("#appointments").on("click", ".addEvent", function (e) {
         e.data = {
             method: "POST",
             text: "Adding...",
@@ -31,10 +81,11 @@ $(document).ready(function () {
     $(".getAppointments").on(
         "click",
         { method: "GET", url: "/getappointments", text: "Retrieving..." },
-        function (e) {
-            checkProgress();
-            onClick(e);
-        }
+        onClick
+        // function (e) {
+        //     checkProgress();
+        //     onClick(e);
+        // }
     );
 
     function onClick(event) {
@@ -46,7 +97,8 @@ $(document).ready(function () {
             type: event.data.method,
             url: event.data.url,
             success: function () {
-                window.location.replace("/");
+                button.html(button.data("previousState"));
+                table.ajax.url("/api/get").load();
             },
             error: function (jqXHR, status, error) {
                 errorFunc(jqXHR, status, error, button);
@@ -55,13 +107,14 @@ $(document).ready(function () {
     }
 
     function checkProgress() {
-        let bar = $("#progressRow");
-        bar.collapse("show");
+        let row = $("#progressRow");
+        row.collapse("show");
         $.ajax({
             type: "GET",
             url: "/progress",
             success: function (data) {
                 let progress = data.progress;
+                console.log(progress);
                 let bar = $(".progress-bar");
                 if (progress >= 0 && progress <= 100) {
                     bar.attr("aria-valuenow", progress).css(
@@ -69,14 +122,14 @@ $(document).ready(function () {
                         progress + "%"
                     );
                     bar.text(progress + "%");
-                    setTimeout(checkProgress, 1000);
+                    setTimeout(checkProgress, 100);
                 } else {
-                    bar.collapse("hide");
+                    row.collapse("hide");
                     clearTimeout(checkProgress);
                 }
             },
             error: function () {
-                bar.collapse("hide");
+                row.collapse("hide");
                 clearTimeout(checkProgress);
             },
         });

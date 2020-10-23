@@ -21,25 +21,8 @@ from scheduler import scraperThread
 @bp.route("/index.html")
 @oauth_required
 def index():
-    models = None
-
-    if "sqlite" in os.environ.get("DATABASE_URI"):
-        models = Appointment.query.filter(
-            func.DATETIME(Appointment.end) >= datetime.datetime.now()
-        ).all()
-    else:
-        models = Appointment.query.filter(
-            cast(Appointment.end, DateTime) >= datetime.datetime.now()
-        ).all()
-
-    appointments = []
-
-    for model in models:
-        appointments.append(model.toDict())
-
     return render_template(
         "index.html",
-        appointments=appointments,
     )
 
 
@@ -103,10 +86,8 @@ def callback():
 
 @bp.route("/getappointments")
 def getAppointments():
-    # global scraperThread
     try:
         scraperThread.run()
-        scraperThread.progress = 0
     except Exception as e:
         resp = Response(response=str(e), status=500)
         raise InternalServerError(response=resp)
@@ -118,9 +99,10 @@ def getAppointments():
 def progress():
     progress = scraperThread.progress
     if progress >= 0:
-        return jsonify(progress=scraperThread.progress), 200
+        print(progress)
+        return {"progress": progress}, 200
     else:
-        return jsonify(message="error"), 500
+        return {"message": "error"}, 500
 
 
 @bp.route("/appointment/<int:id>")

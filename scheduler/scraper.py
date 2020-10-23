@@ -153,7 +153,7 @@ class ScraperThread(Thread):
             self.progress = 50
             parse(appointments)
             logging.info("Finished. Exiting scraper...")
-            self.progress = 100
+            self.progress = 110
         except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             filename = exception_traceback.tb_frame.f_code.co_filename
