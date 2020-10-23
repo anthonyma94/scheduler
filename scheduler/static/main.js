@@ -98,7 +98,11 @@ $(document).ready(function () {
             url: event.data.url,
             success: function () {
                 button.html(button.data("previousState"));
-                table.ajax.url("/api/get").load();
+                if ($(button).hasClass("addEvent")) {
+                    table.ajax.url("/api/get").load();
+                } else {
+                    location.reload();
+                }
             },
             error: function (jqXHR, status, error) {
                 errorFunc(jqXHR, status, error, button);
