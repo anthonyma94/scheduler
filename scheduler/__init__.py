@@ -21,6 +21,7 @@ if app.config["ENV"].lower() == "development":
     app.config.from_object(DevelopmentConfig)
 elif app.config["ENV"].lower() == "production":
     app.config.from_object(ProductionConfig)
+    logging.getLogger("werkzeug").setLevel(logging.ERROR)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.register_blueprint(bp)
 

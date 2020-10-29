@@ -24,11 +24,17 @@ class Appointment(db.Model):
 
     @staticmethod
     def create(link: str, soup: BeautifulSoup):
+
+        # Find name
+        nameSpan: BeautifulSoup = soup.p.span
+        name = nameSpan.get_text().strip()
+        name = string.capwords(name)
+
         # Check if placeholder
         placeholderSpan = soup.find(attrs={"class": "half_last"}).p
 
         placeholder = "PLACEHOLDER" in str(placeholderSpan)
-        if placeholder:
+        if placeholder and name == "Anthony Ma":
             return
 
         # Find start and end time
