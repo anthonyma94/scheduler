@@ -1,6 +1,8 @@
 import logging
 from scheduler.scraper import ScraperThread
 from flask import Flask
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from werkzeug.middleware.proxy_fix import ProxyFix
 from scheduler.config import DevelopmentConfig, ProductionConfig
 from scheduler.utils import db
@@ -17,6 +19,11 @@ if find_dotenv() != "":
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "super-secret"
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+jwt = JWTManager(app)
+CORS(app)
+
 if app.config["ENV"].lower() == "development":
     app.config.from_object(DevelopmentConfig)
 elif app.config["ENV"].lower() == "production":

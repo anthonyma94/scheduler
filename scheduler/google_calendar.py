@@ -1,6 +1,7 @@
 import datetime, logging, flask
 from os.path import abspath, dirname, join
 from os import environ
+from flask_jwt_extended.utils import get_jwt_identity
 from google.oauth2 import credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
@@ -63,24 +64,38 @@ def getCredentials(resp):
 
     flow.fetch_token(authorization_response=resp)
 
-    credentials = flow.credentials
+    # credentials = flow.credentials
 
-    flask.session["credentials"] = {
-        "token": credentials.token,
-        "refresh_token": credentials.refresh_token,
-        "token_uri": credentials.token_uri,
-        "client_id": credentials.client_id,
-        "client_secret": credentials.client_secret,
-        "scopes": credentials.scopes,
+    # flask.session["credentials"] = {
+    #     "token": credentials.token,
+    #     "refresh_token": credentials.refresh_token,
+    #     "token_uri": credentials.token_uri,
+    #     "client_id": credentials.client_id,
+    #     "client_secret": credentials.client_secret,
+    #     "scopes": credentials.scopes,
+    # }
+
+    credentials = {
+        "token": flow.credentials.token,
+        "refresh_token": flow.credentials.refresh_token,
+        "token_uri": flow.credentials.token_uri,
+        "client_id": flow.credentials.client_id,
+        "client_secret": flow.credentials.client_secret,
+        "scopes": flow.credentials.scopes,
     }
+
+    return credentials
 
 
 def addEvent(event: CalendarEvent) -> str:
-    if "credentials" not in flask.session:
-        logging.error("Missing credentials. Redirecting...")
+    # if "credentials" not in flask.session:
+    #     logging.error("Missing credentials. Redirecting...")
+    #     return flask.redirect("/auth", 303)
+    try:
+        cred = credentials.Credentials(**get_jwt_identity())
+    except Exception:
         return flask.redirect("/auth", 303)
 
-    cred = credentials.Credentials(**flask.session["credentials"])
     service = build("calendar", "v3", credentials=cred, cache_discovery=False)
 
     res = service.events().insert(calendarId=CAL_ID, body=event.toDict()).execute()
@@ -91,11 +106,14 @@ def addEvent(event: CalendarEvent) -> str:
 
 
 def deleteEvent(id):
-    if "credentials" not in flask.session:
-        logging.error("Missing credentials. Redirecting...")
-        return flask.redirect("/auth", 303)
+    # if "credentials" not in flask.session:
+    #     logging.error("Missing credentials. Redirecting...")
+    #     return flask.redirect("/auth", 303)
 
-    cred = credentials.Credentials(**flask.session["credentials"])
+    try:
+        cred = credentials.Credentials(**get_jwt_identity())
+    except Exception:
+        return flask.redirect("/auth", 303)
 
     service = build("calendar", "v3", credentials=cred, cache_discovery=False)
 

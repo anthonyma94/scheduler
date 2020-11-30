@@ -1,9 +1,9 @@
-import datetime, logging, os
-import json
+import datetime, os
 from flask import redirect, request
 from flask.blueprints import Blueprint
-from flask.json import jsonify
 from flask.templating import render_template
+from flask_jwt_extended import get_jwt_identity, create_access_token
+from flask_jwt_extended.utils import set_access_cookies
 from sqlalchemy import func, DateTime, cast, or_
 from typing import List
 from werkzeug.exceptions import InternalServerError
@@ -19,7 +19,7 @@ from scheduler import scraperThread
 
 @bp.route("/")
 @bp.route("/index.html")
-@oauth_required
+# @oauth_required
 def index():
     return render_template(
         "index.html",
@@ -79,12 +79,19 @@ def auth():
 def callback():
 
     url = request.url
-    getCredentials(url)
+    identity = getCredentials(url)
+
+    access_token = create_access_token(identity=identity)
+
+    resp = redirect("/")
+    set_access_cookies(resp, access_token)
+    return resp, 302
 
     return redirect("/", 302)
 
 
 @bp.route("/getappointments")
+@oauth_required
 def getAppointments():
     try:
         scraperThread.run()
@@ -92,7 +99,7 @@ def getAppointments():
         resp = Response(response=str(e), status=500)
         raise InternalServerError(response=resp)
 
-    return ("", 200)
+    return ({}, 200)
 
 
 @bp.route("/progress", methods=["GET"])
@@ -122,14 +129,14 @@ def add(id):
         for i in appointments:
             i.add_event()
 
-        return ("", 200)
+        return ({}, 200)
 
     appointment: Appointment = Appointment.query.get(id)
 
     if not appointment.calendarEventExists:
         appointment.add_event()
 
-    return ("", 204)
+    return ({}, 204)
 
 
 @bp.route("/delete/<int:id>")

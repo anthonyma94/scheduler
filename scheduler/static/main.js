@@ -51,7 +51,7 @@ $(document).ready(function () {
 
     $("#appointments").on("click", ".addEvent", function (e) {
         e.data = {
-            method: "POST",
+            method: "GET",
             text: "Adding...",
             url: "/add/" + this.id,
         };
@@ -69,7 +69,7 @@ $(document).ready(function () {
         );
         currentWindow.focus();
         newWindow.location.href = this.href;
-        setTimeout(() => newWindow.close(), 500);
+        setTimeout(() => newWindow.close(), 1000);
         currentWindow.focus();
     });
 
@@ -80,28 +80,33 @@ $(document).ready(function () {
     );
     $(".getAppointments").on(
         "click",
-        { method: "GET", url: "/getappointments", text: "Retrieving..." },
+        {
+            method: "GET",
+            url: "/getappointments",
+            text: "Retrieving...",
+        },
         onClick
-        // function (e) {
-        //     checkProgress();
-        //     onClick(e);
-        // }
     );
 
     function onClick(event) {
+        const { method, url, text } = event.data;
         button = $(event.target);
         button.data("previousState", button.html());
-        button.html(loadButton(event.data.text));
+        button.html(loadButton(text));
 
         $.ajax({
-            type: event.data.method,
-            url: event.data.url,
-            success: function () {
-                button.html(button.data("previousState"));
-                if ($(button).hasClass("addEvent")) {
-                    table.ajax.url("/api/get").load();
+            type: method,
+            url,
+            success: function (data) {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
                 } else {
-                    location.reload();
+                    button.html(button.data("previousState"));
+                    if ($(button).hasClass("addEvent")) {
+                        table.ajax.url("/api/get").load();
+                    } else {
+                        location.reload();
+                    }
                 }
             },
             error: function (jqXHR, status, error) {
@@ -145,6 +150,7 @@ $(document).ready(function () {
     }
 
     function errorFunc(jqXHR, status, error, button) {
+        console.log(jqXHR);
         button.html(button.data("previousState"));
         let alert = $("#topAlert");
         let div = alert.closest(".container-fluid");
