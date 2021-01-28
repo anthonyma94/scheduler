@@ -25,6 +25,9 @@ class Appointment(db.Model):
     @staticmethod
     def create(link: str, soup: BeautifulSoup):
 
+        # with open("output.html", "w") as f:
+        #     f.write(soup.prettify())
+
         # Find name
         nameSpan: BeautifulSoup = soup.p.span
         name = nameSpan.get_text().strip()

@@ -1,4 +1,4 @@
-from typing import final
+import logging
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from flask_sqlalchemy import SQLAlchemy
@@ -36,10 +36,7 @@ def oauth_required(f):
                 raise Exception("Invalid identity in token.")
             return f(*args, **kwargs)
         except Exception as e:
-            print(e)
+            logging.error(e)
             return jsonify({"redirect": "/auth"})
-        # if "credentials" not in session:
-        #     return redirect(url_for("/.auth"))
-        # return f(*args, **kwargs)
 
     return decorated_function

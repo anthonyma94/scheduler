@@ -1,4 +1,4 @@
-import logging
+import logging, datetime
 from scheduler.scraper import ScraperThread
 from flask import Flask
 from flask_cors import CORS
@@ -21,6 +21,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(days=150)
 jwt = JWTManager(app)
 CORS(app)
 

@@ -1,7 +1,6 @@
 import os, regex, datetime, logging, sys, requests, json
 from threading import Thread
 from bs4 import BeautifulSoup
-from lxml import html
 from werkzeug.exceptions import InternalServerError
 from scheduler.appointment import Appointment
 from scheduler.utils import db
@@ -14,17 +13,24 @@ def scrape():
     find_schedule = None
     login = None
     with open("scheduler/static/config.json") as f:
+        logging.debug("Loading JSON...")
         data = json.load(f)
         headers, find_schedule, login = (
             data["headers"],
             data["find_schedule"],
             data["login"],
         )
+        logging.debug("JSON loaded.")
 
-    login["username"], login["password"] = (
-        os.environ["USERNAME"],
-        os.environ["PASSWORD"],
-    )
+    try:
+        login["username"], login["password"] = (
+            os.environ["USERNAME"],
+            os.environ["PASSWORD"],
+        )
+    except KeyError as e:
+        logging.error("Username or password missing.")
+        return
+
     find_schedule["sdate"], find_schedule["edate"] = (
         datetime.date.today().strftime("%B %d, %Y"),
         (datetime.date.today() + datetime.timedelta(days=21)).strftime("%B %d, %Y"),
@@ -37,7 +43,9 @@ def scrape():
 
     soup = BeautifulSoup(res.text, "html.parser")
 
-    # divs = soup.find_all(name="div", attrs={"class": "form_frame"})
+    # with open("output2.html", "w") as f:
+    #     f.write(soup.prettify())
+
     div = soup.find(
         lambda x: x.name == "div"
         and "form_frame" in x.get("class", [])
@@ -52,7 +60,6 @@ def scrape():
     links = []
     for i in divs:
         a = i.find(name="a", text=regex.compile("View Appointment"))
-        # a = i[0][0].get("onclick")
         match = regex.search(r"(?<=window\.open\(\')([^\']*)", a.get("onclick"))
         links.append("https://mohawk2.mywconline.com/" + match.group())
 
@@ -145,20 +152,21 @@ class ScraperThread(Thread):
         super().__init__()
 
     def run(self) -> None:
-        try:
-            self.progress = 10
-            # raise Exception
-            logging.info("Starting scraper...")
-            appointments = scrape()
-            self.progress = 50
-            parse(appointments)
-            logging.info("Finished. Exiting scraper...")
-            self.progress = 110
-        except Exception as e:
-            exception_type, exception_object, exception_traceback = sys.exc_info()
-            filename = exception_traceback.tb_frame.f_code.co_filename
-            self.progress = -1
-            logging.error(
-                f"{exception_type.__name__} at line {exception_traceback.tb_lineno} in {filename}: {e}"
-            )
-            raise InternalServerError(description="An unknown error occured.")
+        # try:
+        self.progress = 10
+        # raise Exception
+        logging.info("Starting scraper...")
+        appointments = scrape()
+        self.progress = 50
+        parse(appointments)
+        logging.info("Finished. Exiting scraper...")
+        self.progress = 110
+
+    # except Exception as e:
+    #     exception_type, exception_object, exception_traceback = sys.exc_info()
+    #     filename = exception_traceback.tb_frame.f_code.co_filename
+    #     self.progress = -1
+    #     logging.error(
+    #         f"{exception_type.__name__} at line {exception_traceback.tb_lineno} in {filename}: {e}"
+    #     )
+    #     raise InternalServerError(description="An unknown error occured.")
